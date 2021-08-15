@@ -68,6 +68,7 @@ jobs:
   test-frontend:
     docker:
       - image: circleci/node:13.8.0
+      - image: circleci/slack@3.4.2
     steps:
       - checkout
       - restore_cache:
@@ -76,10 +77,18 @@ jobs:
           name: Front-end test
           command: |
             cd frontend && npm i && npm run test
+      - slack/notify:
+          color: "#42e2f4"
+          mentions: "m.rabie12"
+          message: A custom message to notify the channel about the latest build
+      - slack/status:
+          fail_only: true
+          mentions: "m.rabie12"
 
   test-backend:
     docker:
       - image: circleci/node:13.8.0
+      - image: circleci/slack@3.4.2
     steps:
       - checkout
       - restore_cache:
@@ -88,6 +97,13 @@ jobs:
           name: Back-end test
           command: |
             cd backend && npm i && npm run test
+      - slack/notify:
+          color: "#42e2f4"
+          mentions: "m.rabie12"
+          message: A custom message to notify the channel about the latest build
+      - slack/status:
+          fail_only: true
+          mentions: "m.rabie12"
 
   scan-frontend:
     docker:
