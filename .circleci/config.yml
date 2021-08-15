@@ -1,43 +1,3 @@
-#version: '2.1'
-
-#orbs:
-#  slack: circleci/slack@4.3.3
-#jobs:
-#  notify:
-#    docker:
-#      - image: 'cimg/base:stable'
-#    steps:
-#      - run:
-#          name: fail_step
-#          command: |
-#            return 1
-#      - slack/notify:
-#          channel: '#general'
-#          custom: |
-#            {
-#              "blocks": [
-#                {
-#                  "type": "section",
-#                  "fields": [
-#                    {
-#                      "type": "plain_text",
-#                      "text": "*This is a text notification*",
-#                      "emoji": true
-#                    }
-#                  ]
-#                }
-#              ]
-#            }
-#          event: fail
-#workflows:
-#  send-notification:
-#    jobs:
-#      - notify
-#
-
-
-
-
 version: 2.1
 
 orbs:
@@ -191,29 +151,21 @@ jobs:
           command: |
             cd backend && npm i && npm audit fix --audit-level=critical --force
 
-#  deploy-infrastructure:
-#    docker:
-#      # Docker image here that supports AWS CLI
-#    steps:
-#      # Checkout code from git
-#      - run:
-#          name: Ensure back-end infrastructure exists
-#          command: |
-#            aws cloudformation deploy \
-#              --template-file .circleci/files/backend.yml \
-#              #--tags project=your-tag \
-#              # --stack-name "your back-end stack name with workflow id" \
-#              # --parameter-overrides ID="your workflow id"
-#              exit 1
-#      - run:
-#          name: Ensure front-end infrastructure exist
-#          command: |
-#            aws cloudformation deploy \
-#              --template-file .circleci/files/frontend.yml \
-#              #--tags project=your-tag \
-#              # --stack-name "your front-end stack name with workflow id" \
-#              # --parameter-overrides ID="your workflow id"
-#              exit 1
+  deploy-infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Ensure back-end infrastructure exists
+          command: |
+            aws cloudformation deploy --template-file .circleci/files/backend.yml --tags project=udapeopleBack-tag --stack-name udaPeopleBack-stack --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
+              # exit 1
+      - run:
+          name: Ensure front-end infrastructure exist
+          command: |
+            aws cloudformation deploy --template-file .circleci/files/frontend.yml --tags project=udapeopleFront-tag --stack-name udaPeopleFront-stack --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
+             # exit 1
 #      - run:
 #          name: Add back-end ip to ansible inventory
 #          command: |
@@ -223,8 +175,8 @@ jobs:
 #          root: ~/
 #          paths:
 #            - project/.circleci/ansible/inventory.txt
-#      # Here's where you will add some code to rollback on failure
-#
+      # Here's where you will add some code to rollback on failure
+
 #  configure-infrastructure:
 #    docker:
 #      # Docker image here that supports Ansible
@@ -370,11 +322,11 @@ workflows:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
-#      - deploy-infrastructure:
-#          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-#          filters:
-#            branches:
-#              only: [test-feature-branch]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [master]
 #      - configure-infrastructure:
 #          requires: [deploy-infrastructure]
 #      - run-migrations:
@@ -389,3 +341,55 @@ workflows:
 #          requires: [smoke-test]
 #      - cleanup:
 #          requires: [cloudfront-update]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#version: '2.1'
+
+#orbs:
+#  slack: circleci/slack@4.3.3
+#jobs:
+#  notify:
+#    docker:
+#      - image: 'cimg/base:stable'
+#    steps:
+#      - run:
+#          name: fail_step
+#          command: |
+#            return 1
+#      - slack/notify:
+#          channel: '#general'
+#          custom: |
+#            {
+#              "blocks": [
+#                {
+#                  "type": "section",
+#                  "fields": [
+#                    {
+#                      "type": "plain_text",
+#                      "text": "*This is a text notification*",
+#                      "emoji": true
+#                    }
+#                  ]
+#                }
+#              ]
+#            }
+#          event: fail
+#workflows:
+#  send-notification:
+#    jobs:
+#      - notify
+#
+
+
