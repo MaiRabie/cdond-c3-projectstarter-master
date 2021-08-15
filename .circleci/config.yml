@@ -66,9 +66,10 @@ jobs:
           key: backend-build
 
   test-frontend:
+    orbs:
+      slack: circleci/slack@4.0
     docker:
       - image: circleci/node:13.8.0
-      - image: circleci/slack@3.4.2
     steps:
       - checkout
       - restore_cache:
@@ -86,9 +87,10 @@ jobs:
           mentions: "m.rabie12"
 
   test-backend:
+    orbs:
+      slack: circleci/slack@4.0
     docker:
       - image: circleci/node:13.8.0
-      - image: circleci/slack@3.4.2
     steps:
       - checkout
       - restore_cache:
