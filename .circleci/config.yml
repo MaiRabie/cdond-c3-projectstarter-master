@@ -15,7 +15,7 @@ jobs:
           command: |
             return 1
       - slack/notify:
-          channel: '#project'
+          channel: '#general'
           custom: |
             {
               "blocks": [
