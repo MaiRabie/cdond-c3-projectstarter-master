@@ -1,10 +1,12 @@
 version: 2.1
 
+orbs:
+  slack: circleci/slack@4.3.3
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      # Add parameter here   
+      # Add parameter here
     steps:
       - run:
           name: Destroy environments
@@ -16,7 +18,7 @@ commands:
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
-      # Add parameter here     
+      # Add parameter here
     steps:
       - run:
           name: Revert migrations
@@ -24,14 +26,14 @@ commands:
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
             SUCCESS = 1
-            if(( $SUCCESS==1 )); 
+            if(( $SUCCESS==1 ));
             then
             #  cd ~/project/backend
             #  npm install
             #  Add revert code here. You can find this in the Getting Started section.
               exit 1
             fi
-            
+
 jobs:
   build-frontend:
     docker:
@@ -65,6 +67,7 @@ jobs:
           paths: [backend/node_modules]
           key: backend-build
 
+
   test-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -76,6 +79,24 @@ jobs:
           name: Front-end test
           command: |
             cd frontend && npm i && npm run test
+      - slack/notify:
+          channel: '#general'
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "*This is a text notification*",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: fail
 
   test-backend:
     docker:
@@ -88,7 +109,24 @@ jobs:
           name: Back-end test
           command: |
             cd backend && npm i && npm run test
-
+      - slack/notify:
+          channel: '#general'
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "*This is a text notification*",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: fail
   scan-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -111,42 +149,41 @@ jobs:
       - run:
           name: Back-end test
           command: |
-            cd backend && npm i && npm audit fix --audit-level=critical
+            cd backend && npm i && npm audit fix --audit-level=critical --force
 
-#  deploy-infrastructure:
-#    docker:
-#      # Docker image here that supports AWS CLI
-#    steps:
-#      # Checkout code from git
-#      - run:
-#          name: Ensure back-end infrastructure exists
-#          command: |
-#            aws cloudformation deploy \
-#              --template-file .circleci/files/backend.yml \
-#              #--tags project=your-tag \
-#              # --stack-name "your back-end stack name with workflow id" \
-#              # --parameter-overrides ID="your workflow id"
-#              exit 1
-#      - run:
-#          name: Ensure front-end infrastructure exist
-#          command: |
-#            aws cloudformation deploy \
-#              --template-file .circleci/files/frontend.yml \
-#              #--tags project=your-tag \
-#              # --stack-name "your front-end stack name with workflow id" \
-#              # --parameter-overrides ID="your workflow id"
-#              exit 1
-#      - run:
-#          name: Add back-end ip to ansible inventory
-#          command: |
-#            # Your code here
-#            exit 1
-#      - persist_to_workspace:
-#          root: ~/
-#          paths:
-#            - project/.circleci/ansible/inventory.txt
-#      # Here's where you will add some code to rollback on failure
-#
+  deploy-infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Ensure back-end infrastructure exists
+          command: |
+            aws cloudformation deploy --template-file .circleci/files/backend.yml --tags project=udapeopleBack-tag --stack-name udaPeopleBack-stack --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
+            URLS=$(aws ec2 describe-instances --region us-east-2 --query "Reservations[*].Instances[*].PublicIpAddress" --output text)
+            echo "url=${URLS}"
+            curl -H "Content-Type: text/plain" -H "token: e2a60db0-bc3c-46fe-ad15-36e00ba41dea" --request PUT --data "$URLS" https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7}
+      # - run:
+      #     name: Ensure front-end infrastructure exist
+      #     command: |
+      #       aws cloudformation deploy --template-file .circleci/files/frontend.yml --tags project=udapeopleFront-tag --stack-name udaPeopleFront-stack --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
+      #       ARN=$(aws s3 ls)
+      #       echo "ARN=$ARN"
+      #       curl -H "Content-Type: text/plain" -H "token: e2a60db0-bc3c-46fe-ad15-36e00ba41dea" --request PUT --data "$ARN" https://api.memstash.io/values/arn_${CIRCLE_WORKFLOW_ID:0:7
+      # - run:
+      #     name: Add back-end ip to ansible inventory
+      #     command: |
+      #        cd .circleci/ansible
+      #        URL=$(curl -H "token: e2a60db0-bc3c-46fe-ad15-36e00ba41dea" --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7})
+      #        echo "$URL" >> inventory.txt
+      #        cat inventory.txt
+
+      # - persist_to_workspace:
+      #     root: ~/
+      #     paths:
+      #       - project/.circleci/ansible/inventory.txt
+      # Here's where you will add some code to rollback on failure
+
 #  configure-infrastructure:
 #    docker:
 #      # Docker image here that supports Ansible
@@ -292,11 +329,11 @@ workflows:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
-#      - deploy-infrastructure:
-#          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-#          filters:
-#            branches:
-#              only: [test-feature-branch]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [master]
 #      - configure-infrastructure:
 #          requires: [deploy-infrastructure]
 #      - run-migrations:
@@ -311,3 +348,55 @@ workflows:
 #          requires: [smoke-test]
 #      - cleanup:
 #          requires: [cloudfront-update]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#version: '2.1'
+
+#orbs:
+#  slack: circleci/slack@4.3.3
+#jobs:
+#  notify:
+#    docker:
+#      - image: 'cimg/base:stable'
+#    steps:
+#      - run:
+#          name: fail_step
+#          command: |
+#            return 1
+#      - slack/notify:
+#          channel: '#general'
+#          custom: |
+#            {
+#              "blocks": [
+#                {
+#                  "type": "section",
+#                  "fields": [
+#                    {
+#                      "type": "plain_text",
+#                      "text": "*This is a text notification*",
+#                      "emoji": true
+#                    }
+#                  ]
+#                }
+#              ]
+#            }
+#          event: fail
+#workflows:
+#  send-notification:
+#    jobs:
+#      - notify
+#
+
+
