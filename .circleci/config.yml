@@ -197,7 +197,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["18:51:fc:17:a2:fa:63:8e:a7:6f:43:fc:33:cb:95:7c"] # You can get this ID in the section where you registered the SSH Key
+          fingerprints: ["1d:4f:86:f3:52:8b:ba:cd:fc:bb:01:79:3b:03:2b:f5"]#["18:51:fc:17:a2:fa:63:8e:a7:6f:43:fc:33:cb:95:7c"] # You can get this ID in the section where you registered the SSH Key
       - attach_workspace:
           at: ~/
       - run:
@@ -221,8 +221,22 @@ jobs:
       - run:
           name: Run migrations
           command: |
-            cd backend && npm i && npm run migrations >> migration.txt
-            cat migration.txt
+            cd backend && npm i
+            echo ENVIRONMENT=production >> ".env"
+            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> ".env"
+            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> ".env"
+            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> ".env"
+            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> ".env"
+            echo TYPEORM_HOST=$TYPEORM_HOST >> ".env"
+            echo TYPEORM_PORT=$TYPEORM_PORT >> ".env"
+            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ".env"
+            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
+            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
+
+            touch migrations.txt
+            npm run migrations >> migration.txt
+            cat migrations.txt
+
           no_output_timeout: 30m
 
       - run:
