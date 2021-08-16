@@ -178,14 +178,20 @@ jobs:
              echo "$URL" >> inventory.txt
              cat inventory.txt
 
-      - persist_to_workspace:
-          name: Install tar/gzip utility
+      - run:
+          name: Dependencies
           command: |
-            yum -y install tar
-          root: ~/
+            cat .circleci/ansible/inventory.txt
+            ls ~/project/.circleci/ansible/
+            cat ~/project/.circleci/ansible/inventory.txt
+            yum -y install tar gzip jq npm
+      - persist_to_workspace:
+          root: .circleci/ansible
           paths:
-            - project/.circleci/ansible/inventory.txt
-      # Here's where you will add some code to rollback on failure
+            - inventory.txt
+
+#      - revert-migrations
+#      - destroy-environment # Rollback on failure
 
 #  configure-infrastructure:
 #    docker:
