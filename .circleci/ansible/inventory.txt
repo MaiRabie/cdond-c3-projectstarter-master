@@ -1,1 +1,2 @@
 [web]
+database-2.cluster-ccd0k1g9sl4i.us-east-2.rds.amazonaws.com
