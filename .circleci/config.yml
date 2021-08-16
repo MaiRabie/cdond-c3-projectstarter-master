@@ -177,7 +177,6 @@ jobs:
              URL=$(curl -H "token: e2a60db0-bc3c-46fe-ad15-36e00ba41dea" --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7})
              echo "$URL" >> inventory.txt
              cat inventory.txt
-
       - run:
           name: Dependencies
           command: |
@@ -193,25 +192,28 @@ jobs:
 #      - revert-migrations
 #      - destroy-environment # Rollback on failure
 
-#  configure-infrastructure:
-#    docker:
-#      # Docker image here that supports Ansible
-#    steps:
-#      # Checkout code from git
-#      # Add ssh keys with fingerprint
-#      # attach workspace
-#      - run:
-#          name: Install dependencies
-#          command: |
-#            # Your code here
-#            exit 1
-#      - run:
-#          name: Configure server
-#          command: |
-#            # Your code here
-#            exit 1
-#      # Here's where you will add some code to rollback on failure
-#
+  configure-infrastructure:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["18:51:fc:17:a2:fa:63:8e:a7:6f:43:fc:33:cb:95:7c"] # You can get this ID in the section where you registered the SSH Key
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible
+            apk add tar
+            apk add gzip
+            pip install awscli
+      - run:
+          name: Configure server
+          command: |
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt configure-server.yml
+
 #  run-migrations:
 #    docker:
 #      # Docker image here that supports NodeJS
