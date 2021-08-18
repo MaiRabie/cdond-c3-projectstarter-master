@@ -373,11 +373,11 @@ jobs:
           command: |
             if [ ! -z prevWorkflowID ]
             then
-              echo "I'm HERE !!!"
               aws s3 rm s3://udapeople-${prevWorkflowID} --recursive
               aws s3 rb s3://udapeople-${prevWorkflowID} --force
+              echo S3 buckets are removed
               aws cloudformation delete-stack --stack-name udaPeopleFront-${prevWorkflowID}
-              aws cloudformation delete-stack --stack-name udaPeopleFront-${prevWorkflowID}
+              aws cloudformation delete-stack --stack-name udaPeopleBack-${prevWorkflowID}
             fi
 
 
