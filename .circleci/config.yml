@@ -323,7 +323,7 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            curl "http://${BACKEND_IP}:3030/api/status"
+            export API_URL="http://${BACKEND_IP}:3030/api/status"
       - run:
           name: Frontend smoke test.
           command: |
