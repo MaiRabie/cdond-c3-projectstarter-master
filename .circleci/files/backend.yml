@@ -32,7 +32,7 @@ Resources:
       SecurityGroups:
         - Ref: InstanceSecurityGroup
       KeyName: chapter3ansible
-      ImageId: 'ami-00399ec92321828f5'
+      ImageId: 'ami-08e6b682a466887dd'
       Tags:
         - Key: Name
           Value: !Sub backend-${ID}
