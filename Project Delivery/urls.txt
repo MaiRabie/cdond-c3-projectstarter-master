@@ -1,6 +1,6 @@
 [URL01]  https://github.com/MaiRabie/cdond-c3-projectstarter-master
          https://github.com/MaiRabie/cdond-c3-projectstarter-master.git
-[URL02] https://s3.console.aws.amazon.com/s3/object/udapeople-d064b109-bf5a-4b29-8f7a-f8ea6f2ea417?region=us-east-2&prefix=index.html
-[URL03] https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/stackinfo?stackId=arn%3Aaws%3Acloudformation%3Aus-east-2%3A989865073797%3Astack%2FudaPeopleCloudFront%2F4b1218b0-0163-11ec-b33b-020d01c16588&filteringStatus=active&filteringText=&viewNested=true&hideStacks=false
+[URL02] https://udapeople-d064b109-bf5a-4b29-8f7a-f8ea6f2ea417.s3.amazonaws.com/index.html#/employees
+[URL03] http://udapeople-d064b109-bf5a-4b29-8f7a-f8ea6f2ea417.s3-website.us-east-2.amazonaws.com/#/employees
 [URL04] https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#InstanceDetails:instanceId=i-0d26e1a56ceed3a75
 [URL05] http://ec2-18-118-2-129.us-east-2.compute.amazonaws.com:9090/targets
