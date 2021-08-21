@@ -318,8 +318,7 @@ jobs:
           name: Deploy backend
           no_output_timeout: 30m
           command: |
-            cd backend
-            touch .env
+            tar -C backend -czvf artifact.tar.gz .
             echo ENVIRONMENT=production >> ".env"
             echo NODE_ENV=production >> ".env"
             echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> ".env"
@@ -331,8 +330,6 @@ jobs:
             echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ".env"
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
-
-            tar -C backend -czvf artifact.tar.gz .
             cd .circleci/ansible
             URL=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID})
             echo "$URL"
