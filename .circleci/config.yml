@@ -213,7 +213,6 @@ jobs:
           command: |
             cd .circleci/ansible
             URL=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID})
-#            echo "[web]" >> inventory.txt
             echo "$URL"
             echo "$URL" >> inventory.txt
             cat inventory.txt
@@ -309,7 +308,6 @@ jobs:
             tar -C backend -czvf artifact.tar.gz .
             cd .circleci/ansible
             URL=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID})
-#            echo "[web]" >> inventory.txt
             echo "$URL"
             echo "$URL" >> inventory.txt
             cat inventory.txt
