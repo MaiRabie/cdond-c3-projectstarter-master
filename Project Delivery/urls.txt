@@ -1,7 +1,6 @@
 [URL01]  https://github.com/MaiRabie/cdond-c3-projectstarter-master
          https://github.com/MaiRabie/cdond-c3-projectstarter-master.git
-[URL02] https://udapeople-f6f1b780-1ac1-40a3-89d6-8519b7208f55.s3.amazonaws.com/index.html#/employees
-[URL03] http://udapeople-f6f1b780-1ac1-40a3-89d6-8519b7208f55.s3-website.us-east-2.amazonaws.com/#/employees
-[URL04] http://ec2-18-117-180-126.us-east-2.compute.amazonaws.com:3030/api/status
-[URL05] http://ec2-3-138-119-180.us-east-2.compute.amazonaws.com:9090/targets
-
+[URL02] https://udapeople-868de6f5-111e-4624-8564-6ffaa2bf9bf9.s3.amazonaws.com/index.html#/employees
+[URL03] http://d3scgseentrw9t.cloudfront.net
+[URL04] http://ec2-18-218-4-235.us-east-2.compute.amazonaws.com:3030/api/status
+[URL05] http://ec2-3-16-47-125.us-east-2.compute.amazonaws.com:9090/targets
